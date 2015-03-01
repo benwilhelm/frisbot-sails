@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "gameTime": "Wed Mar 01 2017 10:55:13 GMT-600 (CST)",
+    "pollingCutoff": "Tue Feb 28 2017 10:55:13 GMT-600 (CST)",
+    "locationName": "River Park",
+    "address": "Foster and Francisco, Chicago",
+    "minimumPlayers": 6,
+    "comment": "Who wants to play?"
+  },
+
+  {
+    "id": 2,
+    "gameTime": "Wed Mar 08 2017 10:55:13 GMT-600 (CST)",
+    "pollingCutoff": "Tue Mar 07 2017 10:55:13 GMT-600 (CST)",
+    "locationName": "River Park",
+    "address": "Foster and Francisco, Chicago",
+    "minimumPlayers": 6,
+    "comment": "Who wants to play?"
+  }
+
+]

@@ -1,5 +1,5 @@
 var moment = require("moment")
-  // , _ = require('underscore')
+  , crypto = require('crypto')
   ;
 
 /**
@@ -11,7 +11,13 @@ var moment = require("moment")
 
 module.exports = {
 
+
   attributes: {
+    organizer: {
+      model: 'user',
+      required: true
+    },
+
     gameTime: {
       type: 'date',
       after: moment().subtract({seconds:3}).toDate(),
@@ -42,17 +48,74 @@ module.exports = {
       required: true
     },
 
-    attending: {
+    playing: {
       type: 'array',
       defaultsTo: []
     },
 
-    notAttending: {
+    notPlaying: {
       type: 'array',
       defaultsTo: []
+    },
+
+    rsvpHashes: {
+      type: 'object',
+      defaultsTo: {},
+      protected: true
+    },
+
+    /**
+     * Instance method
+     * returns difference of playing.length if less than minimumPlayers,
+     * otherwise returns 0
+     */
+    playersNeeded: function() {
+      if (this.playing.length < this.minimumPlayers) {
+        return this.minimumPlayers - this.playing.length;
+      }
+
+      return 0;
+    },
+
+    /**
+     * Instance method
+     * returns status of game based on number of players and pollingCutoff
+     * "waiting" = too few players but polling still open
+     * "pending" = enough players but polling still open
+     * "on"      = enough players and polling closed
+     * "off"     = too few players and polling closed
+     */
+    status: function() {
+
+      if (this.playing.length < this.minimumPlayers
+      && this.stillPolling()) {
+        return 'waiting'
+      }
+
+      if (this.playing.length >= this.minimumPlayers
+      && this.stillPolling()) {
+        return 'pending'
+      }
+
+      if (this.playing.length >= this.minimumPlayers
+      && !this.stillPolling()) {
+        return 'on'
+      }
+
+      if (this.playing.length < this.minimumPlayers
+      && !this.stillPolling()) {
+        return 'off'
+      }
+    },
+
+    stillPolling: function() {
+      return this.pollingCutoff > Date.now();
     }
   },
 
+  /**
+   * Adds userId to appropriate response array for passed gameId
+   */
   rsvp: function(params, callback) {
     var gameId = params.gameId;
     var userId = params.userId;
@@ -61,10 +124,10 @@ module.exports = {
     var responseProperty;
     switch (resp.toLowerCase()) {
       case 'yes':
-        responseProperty = 'attending';
+        responseProperty = 'playing';
         break;
       case 'no':
-        responseProperty = 'notAttending';
+        responseProperty = 'notPlaying';
         break;
       default:
         return callback(new Error("response paramater should be either 'yes' or 'no'"));
@@ -74,7 +137,7 @@ module.exports = {
     Game.findOne(gameId, function(err, game) {
       if (err) return callback(err);
       if (!game) return callback(new Error("Game not found for id: " + gameId));
-      if (game.pollingCutoff < Date.now()) return callback("Cannot rsvp to a game after its pollingCutoff");
+      if (game.pollingCutoff < Date.now()) return callback(new Error("Cannot rsvp to a game after its pollingCutoff"));
 
       User.findOne(userId, function(err, user){
         if (err) return callback(err);
@@ -83,6 +146,16 @@ module.exports = {
         game[responseProperty].push(userId);
         game.save(callback);
       })
+    })
+  },
+
+  afterCreate: function(game, done){
+    User.find({}, function(err, users){
+      users.forEach(function(user){
+        var hash = crypto.randomBytes(8).toString('hex');
+        game.rsvpHashes[hash] = user.id;
+      })
+      done();
     })
   }
 };

@@ -23,6 +23,12 @@ var env = process.env.NODE_ENV || 'development';
 
 module.exports.connections = {
 
+
+  memoryDb: {
+    adapter: 'sails-memory',
+    database: 'frisbot_' + env
+  },
+
   /***************************************************************************
   *                                                                          *
   * Local disk storage for DEVELOPMENT ONLY                                  *

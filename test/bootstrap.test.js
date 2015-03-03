@@ -1,4 +1,5 @@
-var Sails = require('sails')
+var async = require('async')
+  , Sails = require('sails')
   , sails
   ;
 
@@ -7,11 +8,19 @@ before(function(done){
   var conf = require('../config/env/testing.js');
   Sails.lift(conf, function(err, server){
     sails = server;
-    if (err) return done(err);
+    if (err) {
+      console.error(err);
+      return done(err);
+    }
     done(err, sails);
   });
 })
 
 after(function(done){
-  sails.lower(done);
+  async.parallel([
+    function(cb) { User.destroy({}, cb)},
+    function(cb) { Game.destroy({}, cb)}
+  ], function(err){
+    sails.lower(done);
+  })
 })

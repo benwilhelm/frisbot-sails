@@ -4,7 +4,8 @@
     "firstName": "Admin",
     "lastName": "User",
     "email": "admin@test.com",
-    "password": "admin_password"
+    "password": "admin_password",
+    "role": "organizer"
   },
 
   {
@@ -12,6 +13,7 @@
     "firstName": "Ultimate",
     "lastName": "Player",
     "email": "player@test.com",
-    "password": "player_password"
+    "password": "player_password",
+    "role": "player"
   }
 ]

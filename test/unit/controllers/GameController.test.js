@@ -58,7 +58,6 @@ describe("GamesController", function(){
         .send({playing: 'yes'})
         .expect(200)
         .end(function(err, res){
-          console.log(res);
           res.body.playing.should.eql([2]);
           done();
         })

@@ -42,21 +42,28 @@ module.exports = function(grunt) {
 	});
 
 
-	grunt.event.on('watch', function(action, filepath){
-		var match = filepath.match(/^api\/(.+)\.js$/)
+	grunt.event.on('watch', function(action, filepath, subtask) {
+	
+		switch (subtask) {
+			case 'test':
+				var api = filepath.match(/^api\/(.+)\.js$/)
+				var test = filepath.match(/^test\/(.+)\.js$/)
 
-		console.log(match)
+				if (api) {
+					var testPath = 'test/unit/' + api[1] + ".test.js"; 
+					if (fs.existsSync(testPath)) {
+						var src = [ 'test/bootstrap.test.js', testPath ]
+						grunt.config('mochaTest.test.src', src)
+					}
+				}
 
-		if (match) {
-			var testPath = 'test/unit/' + match[1] + ".test.js"; 
-			console.log(testPath);
-			if (fs.existsSync(testPath)) {
-				console.log('exists')
-				grunt.config('mochaTest.test.src', [
-					'test/bootstrap.test.js',
-					testPath
-				])
-			}
+				if (test) {
+					grunt.config('mochaTest.test.src', [
+						'test/bootstrap.test.js',
+						filepath
+					])
+				}
+				break;
 		}
 
 	})

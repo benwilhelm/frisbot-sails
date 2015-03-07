@@ -1,3 +1,3 @@
 module.exports = function (grunt) {
-  grunt.registerTask('watchServe', ['watch:api', 'watch:assets']);
+  grunt.registerTask('watchServe', ['watch:assets']);
 };

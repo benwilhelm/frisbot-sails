@@ -4,7 +4,6 @@ var should = require('should')
   , _ = require('underscore')
   ;
 
-
 describe("User Model", function() {
   
   describe("attributes and validations", function(){

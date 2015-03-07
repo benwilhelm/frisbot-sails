@@ -5,9 +5,12 @@ module.exports = function(grunt) {
 
   grunt.config.set('mochaTest', {
     // Configure a mochaTest task
+
     test: {
       options: {
         reporter: 'spec',
+        clearRequireCache: true, // necessary for selective testing based on watch files
+        timeout: 5000
       },
       src: [
         'test/bootstrap.test.js',
@@ -17,7 +20,5 @@ module.exports = function(grunt) {
       ]
     }
   });
-
-  grunt.registerTask('default', 'mochaTest');
 
 };

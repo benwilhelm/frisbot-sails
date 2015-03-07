@@ -1,4 +1,6 @@
 var app
+  , Barrels = require('barrels')
+  , barrels = new Barrels('./test/fixtures')
   , request = require('supertest')
   , should = require('should')
   ;
@@ -7,7 +9,7 @@ describe("AuthorizationController", function(){
 
   beforeEach(function(done){
     app = sails.hooks.http.app;
-    done();
+    barrels.populate(done, false)
   })
 
   describe("#login action", function(){

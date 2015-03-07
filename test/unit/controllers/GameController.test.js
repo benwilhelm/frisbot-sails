@@ -1,4 +1,5 @@
-var Barrels = require('barrels')
+var authHelper = require('../../helpers/auth.js') 
+  , Barrels = require('barrels')
   , barrels = new Barrels('./test/fixtures')
   , request = require('supertest')
   , should = require('should')
@@ -44,7 +45,26 @@ describe("GamesController", function(){
       .expect(403)
       .end(done);
     })
-    it("should allow rsvp to logged in user")
+
+    it("should allow rsvp to logged in user", function(done){
+      var agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        res.status.should.eql(200);
+        agent
+        .post('/games/2/rsvp')
+        .send({playing: 'yes'})
+        .expect(200)
+        .end(function(err, res){
+          console.log(res);
+          res.body.playing.should.eql([2]);
+          done();
+        })
+      })
+    })
+
     it('should allow rsvp with correct hashkey')
     it("should add user's id to playing array if rsvp is yes")
     it("should add user's id to notPlaying array if rsvp is no")

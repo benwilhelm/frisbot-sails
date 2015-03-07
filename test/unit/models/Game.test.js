@@ -174,7 +174,7 @@ describe("Game Model", function() {
     it("should not allow rsvp after cutoff time");
 
     it("should add userId for 'yes' response to playing array", function(done) {
-      Game.rsvp({gameId: 1, userId: 2, response: 'yes'}, function(err, game){
+      Game.rsvp({gameId: 1, userId: 2, playing: 'yes'}, function(err, game){
         game.playing.should.eql([2]);
         game.notPlaying.should.eql([]);
         done();
@@ -182,7 +182,7 @@ describe("Game Model", function() {
     });
 
     it("should add userId for 'no' response to no array", function(done) {
-      Game.rsvp({gameId: 2, userId: 2, response: 'no'}, function(err, game){
+      Game.rsvp({gameId: 2, userId: 2, playing: 'no'}, function(err, game){
         game.notPlaying.should.eql([2]);
         game.playing.should.eql([]);
         done();

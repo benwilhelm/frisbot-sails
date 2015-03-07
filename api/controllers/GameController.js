@@ -16,11 +16,20 @@ module.exports = {
   },
 
   rsvp: function(req, res) {
-    var gameId = req.param('id')
-    Game.findOne(gameId, function(err, game){
+    var params = {};
+    params.gameId = req.param('id');
+    params.playing = req.body.playing;
+    if (req.session.user) {
+      params.userId = req.session.user;
+    }
+    
+    Game.findOne(params.gameId, function(err, game){
       if (err) return Util.errorResponse(err, res);
 
-      return res.json(game);
+      Game.rsvp(params, function(err, game){
+        if (err) return Util.errorResponse(err, res);
+        return res.json(game);
+      })
     })
   }
 

@@ -119,10 +119,10 @@ module.exports = {
   rsvp: function(params, callback) {
     var gameId = params.gameId;
     var userId = params.userId;
-    var resp = params.response;
+    var playing = params.playing;
 
     var responseProperty;
-    switch (resp.toLowerCase()) {
+    switch (playing.toLowerCase()) {
       case 'yes':
         responseProperty = 'playing';
         break;

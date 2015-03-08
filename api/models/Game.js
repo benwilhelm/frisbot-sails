@@ -131,7 +131,6 @@ module.exports = {
         break;
       default:
         return callback(new Error("response paramater should be either 'yes' or 'no'"));
-        break;
     }    
 
     Game.findOne(gameId, function(err, game) {

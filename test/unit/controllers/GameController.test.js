@@ -132,15 +132,92 @@ describe("GamesController", function(){
   });
 
   describe("#update action", function(){
-    it('should return 403 if user is not logged in')
-    it('should return 403 if user does not have organizer role')
-    it('should respond with updated game')
+    it('should return 403 if user is not logged in', function(done){
+      request(sails.hooks.http.app)
+      .put('/games/1')
+      .send({})
+      .expect(403)
+      .end(done);
+    })
+
+    it('should return 403 if user does not have organizer role', function(done){
+      var agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        res.headers['set-cookie'][0].should.match(/user\=2/)
+
+        agent
+        .put('/games/1')
+        .send({})
+        .expect(403)
+        .end(done);
+      })
+    });
+
+    it('should respond with updated game', function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        agent
+        .put('/games/1')
+        .send({"minimumPlayers":8})
+        .expect(200)
+        .end(function(err, res){
+          should(err).eql(null);
+          res.body.gameTime.should.eql("2017-03-01T16:55:13.000Z")
+          res.body.minimumPlayers.should.eql(8);
+          done();
+        })
+      })
+    })
+
     it("should notify players of gameTime/pollingCutoff changes")
     it('should respond with useful error messages if invalid')
   })
 
   describe("#destroy action", function(){
-    it('should require logged in user with organizer role')
+    it('should respond with 403 if user is not logged in', function(done){
+      request(sails.hooks.http.app)
+      .delete('/games/1')
+      .expect(403)
+      .end(done);
+    })
+
+    it('should respond with 403 if user does not have organizer role', function(done){
+      var agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        res.headers['set-cookie'][0].should.match(/user\=2/)
+        agent
+        .delete('/games/1')
+        .expect(403)
+        .end(done);
+      })
+    })
+
+    it('should respond with deleted game', function(){
+      var agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        agent
+        .delete('/games/1')
+        .expect(200)
+        .end(function(err, res){
+          res.body.id.should.eql(1);
+          res.body.gameTime.should.eql("2017-03-01T16:55:13.000Z")
+          done();
+        });
+      })
+    })
+
     it('should delete game from database')
     it('should notify players')
   })

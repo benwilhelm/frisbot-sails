@@ -146,7 +146,7 @@ describe("Game Model", function() {
       barrels.populate(function(){
         var params = testParams();
         Game.create(params, function(err, game){
-          game.rsvpHashes.should.be.an.Object;
+          game.rsvpHashes.should.be.type('object');
           _.values(game.rsvpHashes).sort().should.eql([1,2]);
           done();
         })
@@ -156,7 +156,7 @@ describe("Game Model", function() {
     it("should strip rsvp hash object from toJSON", function(done){
       var params = testParams();
       Game.create(params, function(err, game){
-        game.rsvpHashes.should.be.an.Object;
+        game.rsvpHashes.should.be.type('object');
         should(game.toJSON().rsvpHashes).eql(undefined);
         done();
       })

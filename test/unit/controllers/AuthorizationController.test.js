@@ -23,7 +23,7 @@ describe("AuthorizationController", function(){
       .end(function(err, res) {
         if (err) throw err;
         res.body.user.email.should.eql('admin@test.com');
-        should(res.body.user.password).be.undefined;
+        should(res.body.user.password).eql(undefined);
         done();
       })
     });
@@ -35,7 +35,7 @@ describe("AuthorizationController", function(){
       .expect(403)
       .end(function(err, res){
         if (err) throw err;
-        should(res.body).be.empty;
+        should(res.body).eql({});
         done();
       })
     })
@@ -48,7 +48,7 @@ describe("AuthorizationController", function(){
       .expect(403)
       .end(function(err, res){
         if (err) throw err;
-        should(res.body).be.empty;
+        should(res.body).eql({});
         done();
       })
     })
@@ -62,7 +62,7 @@ describe("AuthorizationController", function(){
       .get('/logout')
       .expect(200)
       .end(function(err, res){
-        res.body.loggedOut.should.be.true;
+        res.body.loggedOut.should.eql(true);
         done();
       })
     })

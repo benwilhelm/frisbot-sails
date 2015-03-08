@@ -64,7 +64,7 @@ describe("User Model", function() {
       var params = testParams();
       User.create(params)
       .then(function(user){
-        user.password.should.be.a.String;   
+        user.password.should.be.type('string');   
         user.password.length.should.be.above(25);
         should(user.toJSON().password).eql(undefined);
         done();
@@ -82,7 +82,7 @@ describe("User Model", function() {
     it("should hash password on creation", function(done) {
       var params = testParams();
       User.create(params, function(err, user){
-        Util.isBcrypted(user.password).should.be.true;
+        Util.isBcrypted(user.password).should.eql(true);
         done();
       })
     });
@@ -90,7 +90,7 @@ describe("User Model", function() {
     it("should not rehash existing password on update", function(done){
       User.findOne(1, function(err, user){
         var initialPassword = user.password;
-        Util.isBcrypted(initialPassword).should.be.true;
+        Util.isBcrypted(initialPassword).should.eql(true);
 
         user.firstName = "Benjamin";
         user.save(function(err, user){
@@ -103,11 +103,11 @@ describe("User Model", function() {
     it("should hash new password on update", function(done){
       User.findOne(1, function(err, user){
         var initialPassword = user.password;
-        Util.isBcrypted(initialPassword).should.be.true;
+        Util.isBcrypted(initialPassword).should.eql(true);
 
         user.password = "newpassword";
         user.save(function(err, user){
-          Util.isBcrypted(user.password).should.be.true;
+          Util.isBcrypted(user.password).should.eql(true);
           user.password.should.not.eql(initialPassword);
           done();
         })
@@ -127,7 +127,7 @@ describe("User Model", function() {
         email: 'admin@test.com',
         password: 'admin_password'
       }, function(err, user){
-        should(err).be.null;
+        should(err).eql(null);
         user.email.should.eql('admin@test.com');
         done();
       })
@@ -138,8 +138,8 @@ describe("User Model", function() {
         email: 'admin@toast.com',
         password: 'admin_password'
       }, function(err, match){
-        should(err).be.null;
-        match.should.be.false;
+        should(err).eql(null);
+        match.should.eql(false);
         done();
       })
     });
@@ -149,8 +149,8 @@ describe("User Model", function() {
         email: 'admin@test.com',
         password: 'wrong_password'
       }, function(err, match){
-        should(err).be.null;
-        match.should.be.false;
+        should(err).eql(null);
+        match.should.eql(false);
         done();
       })
     });

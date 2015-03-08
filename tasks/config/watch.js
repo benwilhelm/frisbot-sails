@@ -23,6 +23,17 @@ module.exports = function(grunt) {
 			files: ['api/**/*']
 		},
 
+		jshint: {
+			files: [
+				'**/*.js',
+				'!node_modules/**/*'
+			],
+			tasks: ['jshint'],
+			optons: {
+				spawn: false
+			}
+		},
+
 		test: {
 			files: ['api/**/*', 'test/**/*.js'],
 			tasks: ['mochaTest'],
@@ -45,8 +56,9 @@ module.exports = function(grunt) {
 	grunt.event.on('watch', function(action, filepath, subtask) {
 	
 		switch (subtask) {
+
 			case 'test':
-				var api = filepath.match(/^api\/(.+)\.js$/)
+				var api  = filepath.match(/^api\/(.+)\.js$/)
 				var test = filepath.match(/^test\/(.+)\.js$/)
 
 				if (api) {
@@ -64,6 +76,7 @@ module.exports = function(grunt) {
 					])
 				}
 				break;
+
 		}
 
 	})

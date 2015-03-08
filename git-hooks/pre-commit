@@ -1,0 +1,42 @@
+#!/bin/bash
+TEXT_DEFAULT="\\033[0;39m"
+TEXT_INFO="\\033[1;32m"
+TEXT_ERROR="\\033[1;31m"
+TEXT_YELLOW="\\033[1;33m"
+ 
+echo ""
+echo -e "$TEXT_INFO""[ >>> RUNNING PRE-COMMIT HOOK (git-hooks/pre-commit) ]""$TEXT_DEFAULT"
+
+echo ""
+echo -e "$TEXT_INFO""[ >>> running jshint ]""$TEXT_DEFAULT"
+grunt jshint
+[ $? -ne 0 ] && 
+  echo -e "$TEXT_ERROR[ >>> COMMIT REJECTED - failed linting ]$TEXT_DEFAULT" && 
+  exit 1
+
+
+echo ""
+echo -e "$TEXT_INFO""[ >>> running test suite ]""$TEXT_DEFAULT"
+grunt test
+[ $? -ne 0 ] && 
+  echo -e "$TEXT_ERROR[ >>> COMMIT REJECTED - failed tests ]$TEXT_DEFAULT" && 
+  exit 1
+ 
+
+
+FILES_PATTERN='\.js$'
+FORBIDDEN="console\.log|debugger|<<<<<<<|=======|>>>>>>>"
+ 
+if git diff --cached --name-only | \
+    grep -E $FILES_PATTERN | \
+    xargs grep -E --with-filename -n $FORBIDDEN | \
+    grep -v '//';
+then
+    echo ""
+    echo -e "$TEXT_ERROR[ >>> COMMIT REJECTED - lingering debug code ]$TEXT_DEFAULT" &&
+    exit 1;
+fi
+
+echo ""
+echo -e "$TEXT_YELLOW""[ >>> PRE-COMMIT DONE ]""$TEXT_DEFAULT"
+exit 0;

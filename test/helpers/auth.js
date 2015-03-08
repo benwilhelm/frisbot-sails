@@ -11,5 +11,9 @@ module.exports = {
     .post('/login')
     .send(creds)
     .end(callback)
+  },
+
+  logout: function(agent, callback) {
+    agent.get("/logout").end(callback);
   }
 }

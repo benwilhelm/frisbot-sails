@@ -20,6 +20,7 @@
 module.exports.policies = {
 
   GameController: {
-    rsvp: 'isAuthenticated'
+    rsvp: 'hasRsvpCredentials',
+    create: "isOrganizer"
   }
 };

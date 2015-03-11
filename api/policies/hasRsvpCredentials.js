@@ -2,7 +2,8 @@ module.exports = function(req, res, next){
   if (req.session.user) return next();
 
   var gameId = req.param('gameId');
-  var hashkey = req.body.hashkey;
+  var body = req.body || {};
+  var hashkey = body.hashkey || req.param('hashkey');
 
   Game.findOne({id:gameId}, function(err, game){
 

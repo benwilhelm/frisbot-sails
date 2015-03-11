@@ -40,7 +40,8 @@ module.exports.routes = {
   "get  /logout" : "AuthorizationController.logout",
 
   "post /games/:gameId/rsvp" : "GameController.rsvp",
-  "post /games"              : "GameController.create"
+  "post /games"              : "GameController.create",
+  "get  /games/:gameId/rsvp-by-mail/:hashkey/:playing/:redirect?" : "GameController.rsvpByMail"
 
   /***************************************************************************
   *                                                                          *

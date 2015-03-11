@@ -41,7 +41,7 @@ describe("GamesController", function(){
   });
 
   describe("#rsvp action", function(){
-    it("should require logged in user or correct hashkey", function(done){
+    it("should require logged in user", function(done){
       request(sails.hooks.http.app)
       .post('/games/2/rsvp')
       .send({userId: 1, resp: 'yes'})
@@ -49,7 +49,7 @@ describe("GamesController", function(){
       .end(done);
     })
 
-    it("should allow rsvp to logged in user", function(done){
+    it("should user's id to playing array if answers yes", function(done){
       var agent = request.agent(sails.hooks.http.app);
       authHelper.login(agent, {
         email: 'player@test.com',
@@ -67,13 +67,16 @@ describe("GamesController", function(){
       })
     })
 
-    it('should allow rsvp with correct hashkey', function(done){
-      Game.findOne({id:2}, function(err, game){
-        var hashkey = _.invert(game.rsvpHashes)[2];
-
-        request(sails.hooks.http.app)
+    it("should add user's id to notPlaying array if answers no", function(done){
+      var agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        res.status.should.eql(200);
+        agent
         .post('/games/2/rsvp')
-        .send({playing: "no", hashkey: hashkey})
+        .send({playing: 'no'})
         .end(function(err, res){
           res.status.should.eql(200);
           res.body.notPlaying.should.eql([2]);
@@ -81,6 +84,36 @@ describe("GamesController", function(){
         })
       })
     })
+  })
+
+  describe("#rsvpByMail method", function(){
+    it("should require game/user specific hashkey", function(done){
+      request(sails.hooks.http.app)
+      .get('/games/2/rsvp-by-mail/foo/yes')
+      .expect(403)
+      .end(done);
+    })
+
+    it("should add yes response to playing[] and redirect to `redirect` param", function(done){
+      Game.findOne({id:2}, function(err, game){
+        var hashkey = _.invert(game.rsvpHashes)[2];
+
+        request(sails.hooks.http.app)
+        .get('/games/2/rsvp-by-mail/' + hashkey + "/yes/%2F%23%2Fgames%2F2")
+        .end(function(err, res){
+          res.status.should.eql(301);
+          res.headers.location.should.eql("/#/games/2")
+          
+          Game.findOne(2, function(err, game){
+            game.playing.should.eql([2]);
+            done();
+          })
+
+        })
+      })
+    })
+
+    it("should only allow redirect to same domain");
   })
 
   describe("#create action", function(){

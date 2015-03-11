@@ -19,11 +19,7 @@ module.exports = {
     var params = {};
     params.gameId = req.param('gameId');
     params.playing = req.body.playing;
-    if (req.session.user) {
-      params.userId = req.session.user;
-    } else {
-      params.userId = req.rsvpUserId;
-    }
+    params.userId = req.session.user;
     
     Game.findOne(params.gameId, function(err, game){
       if (err) return res.serverError(err)
@@ -33,6 +29,26 @@ module.exports = {
         return res.json(game);
       })
     })
+  },
+
+  rsvpByMail: function(req, res){
+    var params = {
+      gameId  : req.param('gameId'),
+      playing : req.param('playing'),
+      userId  : req.rsvpUserId // set in hasRsvpCredentials policy
+    }
+
+    var redirect = req.param('redirect')
+
+    Game.findOne(params.gameId, function(err, game){
+      if (err) return res.serverError(err);
+
+      Game.rsvp(params, function(err, game){
+        var loc = redirect || "/"
+        res.redirect(301, loc);
+      })
+    })
+
   },
 
   create: function(req, res){

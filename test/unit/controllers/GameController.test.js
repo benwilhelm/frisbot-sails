@@ -234,7 +234,7 @@ describe("GamesController", function(){
       })
     })
 
-    it('should respond with deleted game', function(){
+    it('should respond with deleted game', function(done){
       var agent = request.agent(sails.hooks.http.app);
       authHelper.login(agent, {
         email: 'admin@test.com',

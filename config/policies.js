@@ -25,5 +25,9 @@ module.exports.policies = {
     create: "isOrganizer",
     update: "isOrganizer",
     destroy: "isOrganizer"
+  },
+
+  UserController: {
+    list: 'isOrganizer'
   }
 };

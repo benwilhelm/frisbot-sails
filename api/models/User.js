@@ -35,6 +35,11 @@ module.exports = {
     role: {
       type: 'string',
       enum: ['player', 'organizer']
+    },
+
+    suspended: {
+      type: 'boolean',
+      defaultsTo: false
     }
 
   },
@@ -76,7 +81,8 @@ module.exports = {
 
 function encryptPassword(pw, cb) {
   var bcrypt = require('bcrypt');
-  bcrypt.genSalt(10, function(err, salt){
+  var workFactor = process.env.NODE_ENV === 'testing' ? 1 : 10;
+  bcrypt.genSalt(workFactor, function(err, salt){
     if (err) return next(err);
 
     bcrypt.hash(pw, salt, function(err, hashed) {

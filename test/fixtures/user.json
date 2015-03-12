@@ -5,6 +5,7 @@
     "lastName": "User",
     "email": "admin@test.com",
     "password": "admin_password",
+    "suspended": false,
     "role": "organizer"
   },
 
@@ -14,6 +15,17 @@
     "lastName": "Player",
     "email": "player@test.com",
     "password": "player_password",
+    "suspended": false,
+    "role": "player"
+  },
+
+  {
+    "id": 3,
+    "firstName": "Suspended",
+    "lastName": "Player",
+    "email": "suspended@test.com",
+    "password": "suspended_password",
+    "suspended": true,
     "role": "player"
   }
 ]

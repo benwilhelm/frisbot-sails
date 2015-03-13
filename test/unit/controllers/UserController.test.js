@@ -167,7 +167,7 @@ describe("Users Controller", function(){
       })
     })
 
-    it("should fail with missing parameters", function(done){
+    it("should fail with missing params and send error messages", function(done){
       var params = testParams();
       delete params.firstName;
 
@@ -175,9 +175,13 @@ describe("Users Controller", function(){
       .post('/users')
       .send(params)
       .expect(412)
-      .end(done)
+      .end(function(err, res){
+        if (err) throw err;
+        res.body.invalidAttributes.firstName.length.should.be.above(0);
+        res.body.invalidAttributes.firstName[1].message.should.match(/required/)
+        done();
+      })
     })
-    it("should return useful error messages when applicable")
   })
 
   describe("#verify action", function(){

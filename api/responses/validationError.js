@@ -1,11 +1,10 @@
-module.exports = function validationError (data, options) {
-  // Get access to `req`, `res`, & `sails`
+module.exports = function validationError (err, options) {
+
   var req = this.req;
   var res = this.res;
   var sails = req._sails;
 
-  // Set status code
   res.status(412);
 
-  res.send();
+  res.json(err);
 }

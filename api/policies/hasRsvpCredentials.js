@@ -1,5 +1,5 @@
 module.exports = function(req, res, next){
-  if (req.session.user) return next();
+  if (req.user) return next();
 
   var gameId = req.param('gameId');
   var body = req.body || {};

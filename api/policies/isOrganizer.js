@@ -1,14 +1,8 @@
 module.exports = function(req, res, next) {
 
-  if (!req.session.user) return res.forbidden()
+  if (req.user && req.user.role.toLowerCase() === 'organizer') {
+    return next();
+  }
 
-  User.findOne(req.session.user, function(err, user){
-    if (err) res.serverError(err);
-
-    if (user.role.toLowerCase() === 'organizer') {
-      return next();
-    }
-
-    return res.forbidden();
-  })
+  return res.forbidden();
 }

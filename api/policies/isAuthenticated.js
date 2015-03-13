@@ -11,8 +11,22 @@ module.exports = function(req, res, next) {
 
   // User is allowed, proceed to the next policy, 
   // or if this is the last policy, the controller
-  if (req.session.user) {
-    return next();
+  if (req.session.userId) {
+    
+    return User.findOne(req.session.userId, function(err, user){
+
+      if (err)   
+        return res.serverError(err);
+
+      if (!user) 
+        return res.forbidden("You are not permitted to perform this action.");
+      
+      if (user.suspended)
+        return res.redirect('/logout')
+
+      req.user = user;
+      return next();
+    })
   }
 
   // User is not allowed

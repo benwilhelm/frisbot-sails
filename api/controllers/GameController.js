@@ -19,7 +19,7 @@ module.exports = {
     var params = {};
     params.gameId = req.param('gameId');
     params.playing = req.body.playing;
-    params.userId = req.session.user;
+    params.userId = req.user.id;
     
     Game.findOne(params.gameId, function(err, game){
       if (err) return res.serverError(err)
@@ -53,7 +53,7 @@ module.exports = {
 
   create: function(req, res){
     var params = _.pick(req.body, ['gameTime', 'pollingCutoff', 'locationName', 'address', 'minimumPlayers']);
-    params.organizer = req.session.user;
+    params.organizer = req.user;
     Game.create(params, function(err, game){
       if (err) return res.serverError(err);
 

@@ -22,12 +22,13 @@ module.exports.policies = {
   GameController: {
     rsvp: 'isAuthenticated',
     rsvpByMail: 'hasRsvpCredentials',
-    create: "isOrganizer",
-    update: "isOrganizer",
-    destroy: "isOrganizer"
+    create:  ['isAuthenticated', "isOrganizer"],
+    update:  ['isAuthenticated', "isOrganizer"],
+    destroy: ['isAuthenticated', "isOrganizer"]
   },
 
   UserController: {
-    list: 'isOrganizer'
+    list: ['isAuthenticated', "isOrganizer"],
+    show: ['isAuthenticated']
   }
 };

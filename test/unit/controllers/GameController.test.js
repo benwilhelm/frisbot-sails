@@ -131,7 +131,7 @@ describe("GamesController", function(){
         email: 'player@test.com',
         password: 'player_password'
       }, function(err, res){
-        res.headers["set-cookie"][0].should.match(/user\=2/);
+        res.headers["set-cookie"][0].should.match(/userId\=2/);
         
         agent
         .post('/games')
@@ -147,12 +147,14 @@ describe("GamesController", function(){
         email: 'admin@test.com',
         password: 'admin_password'
       }, function(err, res){ 
+        should(err).eql(null);
         var params = testParams();  
         agent
         .post('/games')
         .send(params)
         .expect(200)
         .end(function(err, res){
+          should(err).eql(null);
           res.body.gameTime.should.eql("2017-03-15T16:55:13.000Z");
           res.body.organizer.should.eql(1);
           done();
@@ -179,7 +181,7 @@ describe("GamesController", function(){
         email: 'player@test.com',
         password: 'player_password'
       }, function(err, res){
-        res.headers['set-cookie'][0].should.match(/user\=2/)
+        res.headers['set-cookie'][0].should.match(/userId\=2/)
 
         agent
         .put('/games/1')
@@ -226,7 +228,7 @@ describe("GamesController", function(){
         email: 'player@test.com',
         password: 'player_password'
       }, function(err, res){
-        res.headers['set-cookie'][0].should.match(/user\=2/)
+        res.headers['set-cookie'][0].should.match(/userId\=2/)
         agent
         .delete('/games/1')
         .expect(403)

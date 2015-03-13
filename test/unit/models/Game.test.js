@@ -147,7 +147,7 @@ describe("Game Model", function() {
         var params = testParams();
         Game.create(params, function(err, game){
           game.rsvpHashes.should.be.type('object');
-          _.values(game.rsvpHashes).sort().should.eql([1,2,3]);
+          _.values(game.rsvpHashes).sort().should.eql([1,2,3,4]);
           done();
         })
       }, false)

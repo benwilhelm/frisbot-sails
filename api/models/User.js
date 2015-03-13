@@ -40,6 +40,11 @@ module.exports = {
     suspended: {
       type: 'boolean',
       defaultsTo: false
+    },
+
+    verified: {
+      type: 'boolean',
+      defaultsTo: false
     }
 
   },

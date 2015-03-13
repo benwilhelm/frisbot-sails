@@ -20,6 +20,7 @@ describe("GamesController", function(){
       .get('/games')
       .expect(200)
       .end(function(err, resp){
+        if (err) throw err;
         resp.body.length.should.eql(2);
         done();
       })
@@ -60,6 +61,7 @@ describe("GamesController", function(){
         .post('/games/2/rsvp')
         .send({playing: 'yes'})
         .end(function(err, res){
+          if (err) throw err;
           res.status.should.eql(200);
           res.body.playing.should.eql([2]);
           done();
@@ -78,6 +80,7 @@ describe("GamesController", function(){
         .post('/games/2/rsvp')
         .send({playing: 'no'})
         .end(function(err, res){
+          if (err) throw err;
           res.status.should.eql(200);
           res.body.notPlaying.should.eql([2]);
           done();

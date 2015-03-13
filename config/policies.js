@@ -28,7 +28,7 @@ module.exports.policies = {
   },
 
   UserController: {
-    list: ['isAuthenticated', "isOrganizer"],
-    show: ['isAuthenticated']
+    index: ['isAuthenticated', "isOrganizer"],
+    show:  ['isAuthenticated', "canEditAccount"]
   }
 };

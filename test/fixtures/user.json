@@ -6,6 +6,7 @@
     "email": "admin@test.com",
     "password": "admin_password",
     "suspended": false,
+    "verified": true,
     "role": "organizer"
   },
 
@@ -16,6 +17,7 @@
     "email": "player@test.com",
     "password": "player_password",
     "suspended": false,
+    "verified": true,
     "role": "player"
   },
 
@@ -26,6 +28,18 @@
     "email": "suspended@test.com",
     "password": "suspended_password",
     "suspended": true,
+    "verified": true,
+    "role": "player"
+  },
+
+  {
+    "id": 4,
+    "firstName": "Unverified",
+    "lastName": "Player",
+    "email": "unverified@test.com",
+    "password": "unverified_password",
+    "suspended": false,
+    "verified": false,
     "role": "player"
   }
 ]

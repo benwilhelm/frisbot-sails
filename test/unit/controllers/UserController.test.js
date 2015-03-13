@@ -1,6 +1,7 @@
 var authHelper = require('../../helpers/auth')
   , Barrels = require('barrels')
   , barrels = new Barrels('./test/fixtures')
+  , should = require('should')
   , request = require('supertest')
   ;
 
@@ -10,7 +11,7 @@ describe("Users Controller", function(){
     barrels.populate(['user'], done)
   })
 
-  describe("#list action", function(){
+  describe("#index action", function(){
     it("should require authentication", function(done){
       request(sails.hooks.http.app)
       .get('/users')
@@ -43,7 +44,8 @@ describe("Users Controller", function(){
         .get('/users')
         .expect(200)
         .end(function(err, res){
-          res.body.length.should.eql(3);
+          if (err) throw err;
+          res.body.length.should.eql(4);
           done();
         })
       })
@@ -58,6 +60,7 @@ describe("Users Controller", function(){
         .get('/users?status=active')
         .expect(200)
         .end(function(err, res){
+          if (err) throw err;
           var ids = _.map(res.body, function(usr) { return usr.id })
           ids.sort();
           ids.length.should.eql(2);
@@ -76,6 +79,7 @@ describe("Users Controller", function(){
         .get('/users?status=suspended')
         .expect(200)
         .end(function(err, res){
+          if (err) throw err;
           var ids = _.map(res.body, function(usr) { return usr.id })
           ids.length.should.eql(1);
           ids.should.eql([3])
@@ -86,13 +90,93 @@ describe("Users Controller", function(){
   })
 
   describe("#show action", function(){
-    it("should require authentication")
-    it("should return user for logged in account")
-    it("should require organizer role to view other users")
+    it("should require authentication", function(done){
+      request(sails.hooks.http.app)
+      .get('/users/2')
+      .expect(403)
+      .end(done)
+    })
+
+    it("should return own account for logged in user", function(done){
+      agent = request.agent(sails.hooks.http.app);
+      authHelper.loginPlayer(agent, function(err, res){
+        agent
+        .get('/users/2')
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.email.should.eql('player@test.com')
+          done();
+        })
+      })
+    })
+
+    it("should return 403 when non-organizer tries to view another user", function(done){
+      agent = request.agent(sails.hooks.http.app);
+      authHelper.loginPlayer(agent, function(err, res){
+        agent
+        .get('/users/1')
+        .expect(403)
+        .end(done);
+      })
+    })
+
+    it("should return any user for organizer", function(done){
+      agent = request.agent(sails.hooks.http.app);
+      authHelper.loginAdmin(agent, function(err, res){
+        agent
+        .get('/users/2')
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.email.should.eql('player@test.com')
+          done();
+        })
+      })
+    })
+
+    it("should return 404 for non-existent user", function(done){
+      agent = request.agent(sails.hooks.http.app);
+      authHelper.loginAdmin(agent, function(err, res){
+        agent
+        .get('/users/25')
+        .expect(404)
+        .end(done);
+      })
+    })
   })
 
   describe("#create action", function(){
-    it("should create new, unverified user")
+    it("should create new, unverified user", function(done){
+      
+      var params = testParams();
+      
+      request(sails.hooks.http.app)
+      .post('/users')
+      .send(params)
+      .expect(200)
+      .end(function(err, res){
+        if (err) throw err;
+        res.body.id.should.be.above(0);
+        res.body.firstName.should.eql(params.firstName);
+        res.body.lastName.should.eql(params.lastName);
+        res.body.email.should.eql(params.email);
+        res.body.verified.should.eql(false)
+        should(res.body.password).eql(undefined);
+        done();
+      })
+    })
+
+    it("should fail with missing parameters", function(done){
+      var params = testParams();
+      delete params.firstName;
+
+      request(sails.hooks.http.app)
+      .post('/users')
+      .send(params)
+      .expect(412)
+      .end(done)
+    })
     it("should return useful error messages when applicable")
   })
 
@@ -107,3 +191,13 @@ describe("Users Controller", function(){
   })
 
 })
+
+
+testParams = function(overrides) {
+  return _.extend({
+      firstName: 'New',
+      lastName: 'User',
+      email: 'new@test.com',
+      password: 'new_password'
+    }, overrides);
+}

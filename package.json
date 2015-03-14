@@ -48,6 +48,7 @@
     "sails-hook-autoreload": "^0.11.4",
     "sails-memory": "^0.10.3",
     "should": "^5.0.1",
+    "sinon": "^1.14.0",
     "supertest": "^0.15.0"
   }
 }

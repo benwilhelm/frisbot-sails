@@ -1,11 +1,15 @@
-var should = require('should')
-  , eventHelper = require("../../helpers/events")
-  , Barrels = require('barrels')
+var Barrels = require('barrels')
   , barrels = new Barrels('./test/fixtures')
+  , should = require('should')
+  , sinon = require('sinon')
   , _ = require('underscore')
   ;
 
 describe("User Model", function() {
+
+  beforeEach(function(done){
+    barrels.populate(['user'], done)
+  });
   
   describe("attributes and validations", function(){
 
@@ -69,6 +73,19 @@ describe("User Model", function() {
         user.password.length.should.be.above(25);
         should(user.toJSON().password).eql(undefined);
         done();
+      })
+    })
+
+    it("should emit 'User.created'", function(done){
+      var params = testParams();
+      var eventStub = sinon.stub(Evt, 'emit');
+      User.create(params, function(err, user){
+        if (err) throw err;
+        setTimeout(function(){
+          eventStub.calledWith("User.created").should.eql(true)
+          eventStub.restore();
+          done();
+        });
       })
     })
 
@@ -162,18 +179,21 @@ describe("User Model", function() {
 
   describe("verify method", function(){
     it("should set `verified` to true, delete verificationCode, and emit `Users.verified`", function(done){
+      var eventStub = sinon.stub(Evt, 'emit');
+
       User.findOne(4, function(err, user){
+        console.error(err);
         if (err) throw err;
         var verCode = user.verificationCode;
         user.verified.should.eql(false)
-
-        // placed out of order
-        eventHelper.testEmitted(Evt, 'User.verified', done);
 
         User.verify({userId: 4, verificationCode: verCode}, function(err, user){
           should(err).eql(null)
           user.verified.should.eql(true);
           should(user.verificationCode).eql(null);
+          eventStub.calledWith('User.verified', user).should.eql(true);
+          Evt.emit.restore();
+          done()
         })
       })
     });

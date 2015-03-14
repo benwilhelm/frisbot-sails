@@ -55,6 +55,11 @@ module.exports = {
     })
   },
 
+  afterCreate: function(atts, next) {
+    Evt.emit('User.created', this)
+    next();
+  },
+
   beforeUpdate: function(atts, next) {
     if (atts.password && !Util.isBcrypted(atts.password)) {
       encryptPassword(atts.password, function(err, hashed){
@@ -67,7 +72,7 @@ module.exports = {
   },
 
   afterUpdate: function(atts, next) {
-    sails.emit("User.update", this);
+    // Evt.emit('User.updated', this)
     next();
   },
 

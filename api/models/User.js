@@ -1,9 +1,7 @@
-/**
-* User.js
-*
-* @description :: TODO: You might write a short summary of how this model works and what it represents here.
-* @docs        :: http://sailsjs.org/#!documentation/models
-*/
+var crypto = require('crypto')
+  , EventEmitter = require("events").EventEmitter
+  , util = require('util')
+  ;
 
 module.exports = {
 
@@ -50,6 +48,7 @@ module.exports = {
   },
 
   beforeCreate: function(atts, next) {
+    atts.verificationCode = crypto.randomBytes(5).toString('hex');
     encryptPassword(atts.password, function(err, hashed){
       atts.password = hashed;
       next();
@@ -57,7 +56,7 @@ module.exports = {
   },
 
   beforeUpdate: function(atts, next) {
-    if (!Util.isBcrypted(atts.password)) {
+    if (atts.password && !Util.isBcrypted(atts.password)) {
       encryptPassword(atts.password, function(err, hashed){
         atts.password = hashed;
         next();
@@ -65,6 +64,11 @@ module.exports = {
     } else {
       next();
     }
+  },
+
+  afterUpdate: function(atts, next) {
+    sails.emit("User.update", this);
+    next();
   },
 
   verifyCredentials: function(params, cb) {
@@ -81,6 +85,37 @@ module.exports = {
       });
     });
   },
+
+  verify: function(params, cb) {
+    var userId = params.userId;
+    var verKey = params.verificationCode;
+    
+    if (!userId || !verKey) {
+      var err = new Error("`verify` method requires userId and vericationCode parameters");
+      err.code = "E_MISSING_PARAM";
+      return cb(err)
+    }
+
+    User.findOne(userId, function(err, user){
+      if (err) return cb(err);
+      
+      verified = (verKey === user.verificationCode) 
+      if (!verified) {
+        err = new Error("incorrect verificationCode")
+        err.code = "E_BAD_CREDENTIALS"
+        return cb(err);
+      }
+
+      user.verified = true;
+      user.verificationCode = null;
+      user.save(function(err, user){
+        if (err) return cb(err);
+
+        Evt.emit('User.verified', user)
+        cb(null, user);
+      });
+    })
+  }
 
 };
 

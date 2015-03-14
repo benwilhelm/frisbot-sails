@@ -43,6 +43,28 @@ module.exports = {
 
       res.json(user);
     })
+  },
+
+  verify: function(req, res) {
+    var userId = req.param('userId');
+    var verCode = req.param('verificationCode')
+    User.verify({
+      userId: userId,
+      verificationCode: verCode
+    }, function(err, user){
+
+      if (err && err.code === "E_MISSING_PARAM")
+        return res.badRequest();
+
+      if (err && err.code === "E_BAD_CREDENTIALS")
+        return res.forbidden();
+
+      if (err)
+        return res.serverError(err);
+
+      res.json(user);
+
+    })
   }
 	
 };

@@ -1,4 +1,5 @@
 var should = require('should')
+  , eventHelper = require("../../helpers/events")
   , Barrels = require('barrels')
   , barrels = new Barrels('./test/fixtures')
   , _ = require('underscore')
@@ -79,10 +80,11 @@ describe("User Model", function() {
       barrels.populate(['user'], done)
     })
 
-    it("should hash password on creation", function(done) {
+    it("should hash password and create verificationCode on creation", function(done) {
       var params = testParams();
       User.create(params, function(err, user){
         Util.isBcrypted(user.password).should.eql(true);
+        user.verificationCode.should.match(/^[\w\d]{10}$/)
         done();
       })
     });
@@ -112,7 +114,7 @@ describe("User Model", function() {
           done();
         })
       })
-    })
+    });
 
   })
 
@@ -152,6 +154,49 @@ describe("User Model", function() {
         should(err).eql(null);
         match.should.eql(false);
         done();
+      })
+    });
+
+    it("should lock account after 5 unsuccessful attempts")
+  });
+
+  describe("verify method", function(){
+    it("should set `verified` to true, delete verificationCode, and emit `Users.verified`", function(done){
+      User.findOne(4, function(err, user){
+        if (err) throw err;
+        var verCode = user.verificationCode;
+        user.verified.should.eql(false)
+
+        // placed out of order
+        eventHelper.testEmitted(Evt, 'User.verified', done);
+
+        User.verify({userId: 4, verificationCode: verCode}, function(err, user){
+          should(err).eql(null)
+          user.verified.should.eql(true);
+          should(user.verificationCode).eql(null);
+        })
+      })
+    });
+
+    it("should return error with bad verificationCode", function(done){
+      User.verify({userId:4, verificationCode: 'bad_code'}, function(err, user){
+        should(user).eql(undefined);
+        err.code.should.eql("E_BAD_CREDENTIALS");
+        err.message.should.eql("incorrect verificationCode")
+        done();
+      })
+    })
+
+    it("should fail with null verificationCode regardless", function(done){
+      User.update(4, {verified: false, verificationCode: null}, function(err, user){
+        if (err) throw err;
+
+        User.verify({userId: 4, verificationCode: null}, function(err, user){
+          should(user).eql(undefined);
+          err.code.should.eql("E_MISSING_PARAM")
+          err.message.should.eql("`verify` method requires userId and vericationCode parameters");
+          done();
+        })
       })
     });
   })

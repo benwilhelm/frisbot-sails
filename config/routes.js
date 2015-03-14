@@ -45,7 +45,8 @@ module.exports.routes = {
 
   "get  /users"         : "UserController.index",
   "get  /users/:userId" : "UserController.show",
-  "post /users"         : "UserController.create"
+  "post /users"         : "UserController.create",
+  "get  /users/:userId/verify/:verificationCode" : "UserController.verify"
 
   /***************************************************************************
   *                                                                          *

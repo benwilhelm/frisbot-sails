@@ -185,7 +185,27 @@ describe("Users Controller", function(){
   })
 
   describe("#verify action", function(){
-    it("should set :verified=true with correct authorization key")
+    it("should set `verified` = true with correct verificationCode", function(done){
+      User.findOne(4, function(err, user){
+        var vc = user.verificationCode;
+        request(sails.hooks.http.app)
+        .get("/users/4/verify/" + vc)
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.verified.should.eql(true);
+          should(res.body.verificationCode).eql(null)
+          done();
+        })
+      })
+    })
+
+    it("should return 403 with bad verificationCode", function(done){
+      request(sails.hooks.http.app)
+      .get("/users/4/verify/bad_code")
+      .expect(403)
+      .end(done);
+    })
   })
 
   describe("#destroy action", function(){

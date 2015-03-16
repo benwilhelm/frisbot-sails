@@ -1,0 +1,93 @@
+<html>
+  <head>
+
+    <style>
+      body {
+        color: #444;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      h1, h2, h3, h4 {
+        color: #222;
+      }
+      h1 {
+        font-size: 24px;
+      }
+
+      #container {
+        max-width: 600px;
+      }
+
+      .section {
+        margin: 0 0 3em;
+      }
+
+      div#respond_buttons {
+        max-width: 300px
+      }
+
+      div#respond_buttons a {
+        background-color: #a00;
+        color: #fff;
+        display: block;
+        font-size: 2em;
+        margin: 5px;
+        padding: .5em .25em;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      div#respond_buttons a.playing {
+        background-color: #0A0;
+      }
+
+      img.weather-icon {
+        width: 200px;
+        height: 133px;
+      }
+
+      #unsubscribe {
+        font-size: small;
+      }
+
+    </style>
+    
+  </head>
+
+  <div id='container'>
+    <div id="game_info" class="section">
+      <h1>A new ultimate game was just scheduled.</h1>
+      <p>
+        <strong>Saturday, Oct 11 - 10:00 am</strong>
+        <br>River Park
+        <br>Foster and Francisco - <a href='#'>map</a>
+      </p>
+
+      <div id='respond_buttons'>
+        <a class='playing' href="#">I'm Playing</a>
+        <a class='not-playing' href="#">I'm Not Playing</a>
+      </div>
+    </div>
+
+    <div id="comment" class='section'>
+      <p>Hey everyone!  <em>New year and a new frisbot!.</em>  Hope to see you all out there.</p>
+    
+      <p>-Ben</p>
+    </div>
+
+    <div id="weather" class='section'>
+      <h3>Weather Forecast</h3>
+
+      <img class='weather-icon' src="./icon.jpg" alt="" />
+
+      <p>Mostly sunny | 64&deg;</p>
+    </div>
+
+    <hr>
+
+    <p id='unsubscribe'>Don't want to play anymore? <a href='#'>Click Here</a> to cancel your account</p>
+
+    
+
+  </div>
+</html>

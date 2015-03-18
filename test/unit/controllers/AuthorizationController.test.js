@@ -1,6 +1,6 @@
 var app
   , Barrels = require('barrels')
-  , barrels = new Barrels('./test/fixtures')
+  , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , request = require('supertest')
   , should = require('should')
   ;

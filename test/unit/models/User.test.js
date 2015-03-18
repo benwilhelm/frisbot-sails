@@ -1,5 +1,5 @@
 var Barrels = require('barrels')
-  , barrels = new Barrels('./test/fixtures')
+  , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , should = require('should')
   , sinon = require('sinon')
   , _ = require('underscore')
@@ -10,7 +10,7 @@ describe("User Model", function() {
   beforeEach(function(done){
     barrels.populate(['user'], done)
   });
-  
+
   describe("attributes and validations", function(){
 
     it("should require firstName", function(done){
@@ -54,7 +54,7 @@ describe("User Model", function() {
         })
       })
     });
-   
+
     it("should require password", function(done) {
       var params = testParams();
       delete params.password;
@@ -69,7 +69,7 @@ describe("User Model", function() {
       var params = testParams();
       User.create(params)
       .then(function(user){
-        user.password.should.be.type('string');   
+        user.password.should.be.type('string');
         user.password.length.should.be.above(25);
         should(user.toJSON().password).eql(undefined);
         done();

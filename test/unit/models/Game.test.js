@@ -1,5 +1,5 @@
 var Barrels = require('barrels')
-  , barrels = new Barrels('./test/fixtures')
+  , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , moment = require('moment')
   , should = require('should')
   , _ = require('underscore')
@@ -43,7 +43,7 @@ describe("Game Model", function() {
     });
 
     it('should require gameTime to be in the future', function(done) {
-      var params = testParams({ 
+      var params = testParams({
         gameTime: moment().subtract({days:2}).toDate(),
         pollingCutoff: moment().subtract({days:3}).toDate()
       })
@@ -69,7 +69,7 @@ describe("Game Model", function() {
     })
 
     it("should require polling cutoff to be in the future", function(done) {
-      var params = testParams({ 
+      var params = testParams({
         gameTime: moment().subtract({days:2}).toDate(),
         pollingCutoff: moment().subtract({days:3}).toDate()
       })
@@ -81,9 +81,9 @@ describe("Game Model", function() {
         done();
       })
     });
-    
+
     it("should require cutoff prior to game time", function(done) {
-      var params = testParams({ 
+      var params = testParams({
         gameTime: moment().subtract({days:2}).toDate()
       })
       Game.create(params, function(err, game){
@@ -94,7 +94,7 @@ describe("Game Model", function() {
         done();
       })
     })
-    
+
     it("should require a locationName", function(done) {
       var params = testParams();
       delete params.locationName;
@@ -118,7 +118,7 @@ describe("Game Model", function() {
         done();
       })
     })
-    
+
     it("should require minimumPlayers", function(done) {
       var params = testParams();
       delete params.minimumPlayers;
@@ -130,7 +130,7 @@ describe("Game Model", function() {
         done();
       })
     });
-    
+
     it("should require minimumPlayers to be integer", function(done) {
       var params = testParams({minimumPlayers: 'foo'});
       Game.create(params, function(err, game) {
@@ -162,7 +162,7 @@ describe("Game Model", function() {
       })
     })
   });
-  
+
   describe("rsvp method", function() {
 
     beforeEach(function(done){
@@ -248,7 +248,7 @@ describe("Game Model", function() {
         done();
       })
     });
-  
+
   });
 
   describe("stillPolling method", function(){

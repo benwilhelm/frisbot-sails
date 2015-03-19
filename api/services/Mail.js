@@ -6,12 +6,42 @@ var async = require('async')
 
 
 module.exports = {
-  sendInvite: function(gameId, users) {
+  
+  sendUserVerification: function(user, callback){
+    if (callback) callback(err, true)
+  },
+
+  sendGameInvite: function(game, users, callback) {
     async.parallel({
-      game:  function(cb){ cb(); },
+      game:  function(cb) { cb(); },
       users: function(cb) { cb(); }
     }, function(err, rslt){
-
+      if (callback) callback(err, rslt);
     });
-  }  
+  }
+
 }
+
+
+/** 
+ * Global Event Subscriptions
+ */
+sails.on("Game.created", function(game){
+  User.findActive(function(err, users){
+    if (err) sails.emit("Mail.error", err);
+    Mail.sendGameInvite(game, users); 
+  })
+})
+
+sails.on("User.created", function(user){
+  Mail.sendUserVerification(user);
+})
+
+sails.on("User.verified", function(user){
+  Game.findPending(function(err, games){
+    if (err) sails.emit("Mail.error", err);
+    games.forEach(function(game){
+      Mail.sendGameInvite(game, [user]);
+    })
+  })
+})

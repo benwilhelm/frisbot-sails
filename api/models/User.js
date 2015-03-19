@@ -55,8 +55,8 @@ module.exports = {
     })
   },
 
-  afterCreate: function(atts, next) {
-    Evt.emit('User.created', this)
+  afterCreate: function(user, next) {
+    sails.emit('User.created', user)
     next();
   },
 
@@ -71,9 +71,16 @@ module.exports = {
     }
   },
 
-  afterUpdate: function(atts, next) {
-    // Evt.emit('User.updated', this)
+  afterUpdate: function(user, next) {
+    sails.emit('User.updated', user)
     next();
+  },
+
+  findActive: function(cb) {
+    User.find({
+      verified  : true,
+      suspended : false
+    }, cb)
   },
 
   verifyCredentials: function(params, cb) {
@@ -116,7 +123,7 @@ module.exports = {
       user.save(function(err, user){
         if (err) return cb(err);
 
-        Evt.emit('User.verified', user)
+        sails.emit('User.verified', user)
         cb(null, user);
       });
     })

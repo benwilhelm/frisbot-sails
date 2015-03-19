@@ -114,6 +114,14 @@ module.exports = {
   },
 
   /**
+   * returns all games with pollingCutoff in the future
+   */
+  findPending: function(cb) {
+    var now = new Date();
+    Game.find({pollingCutoff: {">": now}}, cb)
+  },
+
+  /**
    * Adds userId to appropriate response array for passed gameId
    */
   rsvp: function(params, callback) {

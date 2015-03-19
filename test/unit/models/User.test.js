@@ -78,7 +78,7 @@ describe("User Model", function() {
 
     it("should emit 'User.created'", function(done){
       var params = testParams();
-      var eventStub = sinon.stub(Evt, 'emit');
+      var eventStub = sinon.stub(sails, 'emit');
       User.create(params, function(err, user){
         if (err) throw err;
         setTimeout(function(){
@@ -135,6 +135,18 @@ describe("User Model", function() {
 
   })
 
+  describe("findActive method", function(){
+    it("should return verified, non-suspended users", function(done){
+      User.findActive(function(err, users){
+        if (err) throw err;
+        users.length.should.eql(2);
+        users[0].id.should.eql(1);
+        users[1].id.should.eql(2);
+        done();
+      })
+    })
+  })
+
   describe("verifyCredentials method", function(){
 
     beforeEach(function(done){
@@ -179,10 +191,9 @@ describe("User Model", function() {
 
   describe("verify method", function(){
     it("should set `verified` to true, delete verificationCode, and emit `Users.verified`", function(done){
-      var eventStub = sinon.stub(Evt, 'emit');
+      var eventStub = sinon.stub(sails, 'emit');
 
       User.findOne(4, function(err, user){
-        console.error(err);
         if (err) throw err;
         var verCode = user.verificationCode;
         user.verified.should.eql(false)
@@ -192,7 +203,7 @@ describe("User Model", function() {
           user.verified.should.eql(true);
           should(user.verificationCode).eql(null);
           eventStub.calledWith('User.verified', user).should.eql(true);
-          Evt.emit.restore();
+          sails.emit.restore();
           done()
         })
       })

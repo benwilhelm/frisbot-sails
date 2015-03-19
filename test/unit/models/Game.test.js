@@ -271,6 +271,11 @@ describe("Game Model", function() {
 
   })
 
+  describe("findPending method", function(){
+    // currently no way to test games in the past
+    it("should return games with pollingCutoff greater than Date.now()")
+  })
+
 })
 
 function testParams(params) {

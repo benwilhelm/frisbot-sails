@@ -1,6 +1,6 @@
 var authHelper = require('../../helpers/auth')
   , Barrels = require('barrels')
-  , barrels = new Barrels('./test/fixtures')
+  , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , should = require('should')
   , request = require('supertest')
   ;
@@ -148,9 +148,9 @@ describe("Users Controller", function(){
 
   describe("#create action", function(){
     it("should create new, unverified user", function(done){
-      
+
       var params = testParams();
-      
+
       request(sails.hooks.http.app)
       .post('/users')
       .send(params)

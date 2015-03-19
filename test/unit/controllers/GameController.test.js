@@ -1,6 +1,6 @@
-var authHelper = require('../../helpers/auth.js') 
+var authHelper = require('../../helpers/auth.js')
   , Barrels = require('barrels')
-  , barrels = new Barrels('./test/fixtures')
+  , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , request = require('supertest')
   , should = require('should')
   , _ = require("underscore")
@@ -106,7 +106,7 @@ describe("GamesController", function(){
         .end(function(err, res){
           res.status.should.eql(301);
           res.headers.location.should.eql("/#/games/2")
-          
+
           Game.findOne(2, function(err, game){
             game.playing.should.eql([2]);
             done();
@@ -135,7 +135,7 @@ describe("GamesController", function(){
         password: 'player_password'
       }, function(err, res){
         res.headers["set-cookie"][0].should.match(/userId\=2/);
-        
+
         agent
         .post('/games')
         .send({})
@@ -149,9 +149,9 @@ describe("GamesController", function(){
       authHelper.login(agent, {
         email: 'admin@test.com',
         password: 'admin_password'
-      }, function(err, res){ 
+      }, function(err, res){
         should(err).eql(null);
-        var params = testParams();  
+        var params = testParams();
         agent
         .post('/games')
         .send(params)
@@ -162,7 +162,7 @@ describe("GamesController", function(){
           res.body.organizer.should.eql(1);
           done();
         });
-      })      
+      })
     });
 
     it('should respond with useful error messages if invalid')

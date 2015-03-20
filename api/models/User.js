@@ -1,4 +1,5 @@
-var crypto = require('crypto')
+var bcrypt = require('bcrypt')
+  , crypto = require('crypto')
   , EventEmitter = require("events").EventEmitter
   , util = require('util')
   ;
@@ -132,7 +133,6 @@ module.exports = {
 };
 
 function encryptPassword(pw, cb) {
-  var bcrypt = require('bcrypt');
   var workFactor = process.env.NODE_ENV === 'testing' ? 1 : 10;
   bcrypt.genSalt(workFactor, function(err, salt){
     if (err) return next(err);

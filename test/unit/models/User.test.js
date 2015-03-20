@@ -140,8 +140,9 @@ describe("User Model", function() {
       User.findActive(function(err, users){
         if (err) throw err;
         users.length.should.eql(2);
-        users[0].id.should.eql(1);
-        users[1].id.should.eql(2);
+        _.map(users, function(user){
+          return user.id
+        }).sort().should.eql([1,2])
         done();
       })
     })

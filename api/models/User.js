@@ -33,7 +33,9 @@ module.exports = {
 
     role: {
       type: 'string',
-      enum: ['player', 'organizer']
+      enum: ['player', 'organizer'],
+      required: true,
+      defaultsTo: 'player'
     },
 
     suspended: {

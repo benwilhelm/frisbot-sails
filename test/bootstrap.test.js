@@ -3,6 +3,8 @@ var async = require('async')
   , sails
   ;
 
+process.env.NODE_ENV = 'testing'
+
 before(function(done){
 
   var conf = require('../config/env/testing.js');

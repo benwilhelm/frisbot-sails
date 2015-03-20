@@ -156,11 +156,11 @@ module.exports = {
     })
   },
 
-  afterCreate: function(game, done){
+  beforeCreate: function(vals, done){
     User.find({}, function(err, users){
       users.forEach(function(user){
         var hash = crypto.randomBytes(8).toString('hex');
-        game.rsvpHashes[hash] = user.id;
+        vals.rsvpHashes[hash] = user.id;
       })
       done();
     })

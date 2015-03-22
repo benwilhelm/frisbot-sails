@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
   grunt.config('focus', {
     dev: {
-      include: ['test', 'jshint']
+      include: ['test' /*, 'jshint' */]
     }
   })
 }

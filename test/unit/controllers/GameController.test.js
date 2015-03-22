@@ -3,7 +3,7 @@ var authHelper = require('../../helpers/auth.js')
   , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , request = require('supertest')
   , should = require('should')
-  , _ = require("underscore")
+  , _ = require("lodash")
   ;
 
 describe("GamesController", function(){
@@ -202,10 +202,11 @@ describe("GamesController", function(){
       }, function(err, res){
         agent
         .post('/games/1')
-        .send({"minimumPlayers":8})
+        .send({minimumPlayers:8})
         .expect(200)
         .end(function(err, res){
-          should(err).eql(null);
+          if (err) throw err;
+          res.body.id.should.eql(1)
           res.body.gameTime.should.eql("2017-03-01T16:55:13.000Z")
           res.body.minimumPlayers.should.eql(8);
           done();

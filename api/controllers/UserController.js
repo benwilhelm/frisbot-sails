@@ -1,4 +1,4 @@
-var _ = require('underscore') ;
+var _ = require('lodash') ;
 
 module.exports = {
 
@@ -32,8 +32,7 @@ module.exports = {
   },
 
   create: function(req, res) {
-    var params = _.pick(req.body, ['firstName', 'lastName', 'email', 'password']);
-    User.create(params, function(err, user){
+    User.create(req.body, function(err, user){
     
       if (err && err.code === 'E_VALIDATION')
         return res.validationError(err);
@@ -42,6 +41,33 @@ module.exports = {
         return res.serverError(err);
 
       res.json(user);
+    })
+  },
+
+  update: function(req, res){
+    var userId = req.param('userId');
+    User.update(userId, req.body, function(err, users){
+      
+      if (err)
+        return res.serverError(err);
+      
+      if (!users.length) 
+        return res.notFound();
+
+      return res.json(users[0]);
+    })
+  },
+
+  destroy: function(req, res){
+    userId = req.param('userId');
+    User.findOne(userId, function(err, user){
+      if (err) return res.serverError(err);
+      if (!user) return res.notFound();
+
+      user.destroy(function(err){
+        if (err) return res.serverError(err);
+        res.json(user);
+      })
     })
   },
 
@@ -68,4 +94,5 @@ module.exports = {
   }
 	
 };
+
 

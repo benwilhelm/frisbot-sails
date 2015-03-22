@@ -2,7 +2,7 @@ var Barrels = require('barrels')
   , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , should = require('should')
   , sinon = require('sinon')
-  , _ = require('underscore')
+  , _ = require('lodash')
   ;
 
 describe("User Model", function() {
@@ -186,6 +186,28 @@ describe("User Model", function() {
         done();
       })
     });
+
+    it("should return false for non-verified user", function(done){
+      User.verifyCredentials({
+        email: "unverified@test.com",
+        password: "unverified_password"
+      }, function(err, match){
+        should(err).eql(null)
+        match.should.eql(false);
+        done();
+      })
+    })
+
+    it("should return false for suspended user", function(done){
+      User.verifyCredentials({
+        email: "suspended@test.com",
+        password: "suspended_password"
+      }, function(err, match){
+        should(err).eql(null)
+        match.should.eql(false);
+        done();
+      })
+    })
 
     it("should lock account after 5 unsuccessful attempts")
   });

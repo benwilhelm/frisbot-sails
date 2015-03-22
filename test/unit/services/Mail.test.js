@@ -2,7 +2,7 @@ var Barrels = require("barrels")
   , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , should = require('should')
   , sinon = require('sinon')
-  , _ = require('underscore')
+  , _ = require('lodash')
   ;
 
 describe("MailService", function(){

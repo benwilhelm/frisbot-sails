@@ -165,6 +165,21 @@ describe("Users Controller", function(){
         should(res.body.password).eql(undefined);
         done();
       })
+    });
+
+    it("should not allow creation with non-whitelisted params", function(done){
+      var params = testParams({role: 'organizer'});
+
+      request(sails.hooks.http.app)
+      .post('/users')
+      .send(params)
+      .expect(200)
+      .end(function(err, res){
+        if (err) throw err;
+        res.body.id.should.be.above(0);
+        res.body.role.should.eql('player')
+        done();
+      })
     })
 
     it("should fail with missing params and send error messages", function(done){
@@ -180,6 +195,108 @@ describe("Users Controller", function(){
         res.body.invalidAttributes.firstName.length.should.be.above(0);
         res.body.invalidAttributes.firstName[1].message.should.match(/required/)
         done();
+      })
+    })
+  })
+
+  describe("#update action", function(){
+    it("should require authentication", function(done){
+      request(sails.hooks.http.app)
+      .post('/users/2')
+      .send({})
+      .expect(403)
+      .end(done);
+    })
+    it("should update own account for non-organizer", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .post('/users/2')
+        .send({firstName: "Updated"})
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.id.should.eql(2);
+          res.body.firstName.should.eql("Updated")
+          done();
+        })
+      })
+    })
+
+    it('should not allow player role to update non-whitelisted attributes', function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .post('/users/2')
+        .send({role: "organizer", suspended:true, verified: false})
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.id.should.eql(2);
+          res.body.role.should.eql("player")
+          res.body.verified.should.eql(true)
+          res.body.suspended.should.eql(false)
+          done();
+        })
+      })
+    })
+
+    it("should return 403 for non-organizer if updating another account", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .post('/users/1')
+        .send({})
+        .expect(403)
+        .end(done)
+      })
+    })
+
+    it("should allow organizer to update other accounts, including protected properties", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .post('/users/2')
+        .send({firstName: "Updated", suspended: true})
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.id.should.eql(2);
+          res.body.firstName.should.eql("Updated")
+          res.body.suspended.should.eql(true);
+          done();
+        })
+      })
+    })
+
+    it("should return 404 for non-existent account", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .post('/users/300')
+        .send({})
+        .expect(404)
+        .end(done)
       })
     })
   })
@@ -209,9 +326,64 @@ describe("Users Controller", function(){
   })
 
   describe("#destroy action", function(){
-    it("should require authentication")
-    it("should allow user to destroy self")
-    it("should require organizer role to destroy other users")
+    it("should require authentication", function(done){
+      request(sails.hooks.http.app)
+      .del("/users/2")
+      .expect(403)
+      .end(done);
+    })
+
+    it("should allow any user to destroy self", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .del('/users/2')
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.id.should.eql(2);
+          res.body.firstName.should.eql("Ultimate")
+          done();
+        })
+      })
+    })
+
+    it("should return 403 for player attempting to destroy other user", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'player@test.com',
+        password: 'player_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .del('/users/1')
+        .expect(403)
+        .end(done)
+      })
+    })
+
+    it("should allow organizer to destroy other users", function(done){
+      var agent = request.agent(sails.hooks.http.app)
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        if (err) throw err;
+        agent
+        .del('/users/2')
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          res.body.id.should.eql(2);
+          res.body.firstName.should.eql("Ultimate")
+          done();
+        })
+      })
+    })
   })
 
 })

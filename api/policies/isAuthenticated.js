@@ -21,6 +21,9 @@ module.exports = function(req, res, next) {
       if (!user) 
         return res.forbidden("You are not permitted to perform this action.");
       
+      if (!user.verified)
+        return res.forbidden("You have not verified your account.")
+
       if (user.suspended)
         return res.redirect('/logout')
 

@@ -24,7 +24,7 @@ module.exports = {
   },
 
   create: function(req, res){
-    var params = whiteListParams(req.body)
+    var params = req.body;
     params.organizer = req.user;
     Game.create(params, function(err, game){
       if (err) return res.serverError(err);
@@ -34,7 +34,7 @@ module.exports = {
   },
 
   update: function(req, res) {
-    var params = whiteListParams(req.body)
+    var params = req.body;
     var gameId = req.param('gameId');
     Game.update(gameId, params, function(err, games){
       if (err && err.code === 'E_VALIDATION')
@@ -101,8 +101,3 @@ module.exports = {
 
 
 };
-
-
-function whiteListParams(params) {
-  return _.pick(params, ['gameTime', 'pollingCutoff', 'locationName', 'address', 'minimumPlayers']);
-}

@@ -2,7 +2,7 @@ var Barrels = require('barrels')
   , barrels = new Barrels(process.cwd() + '/test/fixtures')
   , moment = require('moment')
   , should = require('should')
-  , _ = require('underscore')
+  , _ = require('lodash')
   ;
 
 

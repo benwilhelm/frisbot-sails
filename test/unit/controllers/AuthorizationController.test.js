@@ -53,6 +53,36 @@ describe("AuthorizationController", function(){
       })
     })
 
+    it("should send 403 for unverified user", function(done){
+      request(app)
+      .post('/login')
+      .send({
+        email: "unverified@test.com",
+        password: "unverified_password"
+      })
+      .expect(403)
+      .end(function(err, res){
+        if (err) throw err;
+        should(res.body).eql({});
+        done();
+      })
+    })
+
+    it("should send 403 for suspended user", function(done){
+      request(app)
+      .post('/login')
+      .send({
+        email: "suspended@test.com",
+        password: "suspended_password"
+      })
+      .expect(403)
+      .end(function(err, res){
+        if (err) throw err;
+        should(res.body).eql({});
+        done();
+      })
+    })
+
     it("should return descriptive error message on failed login");
   });
 

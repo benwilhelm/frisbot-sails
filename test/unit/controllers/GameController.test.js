@@ -172,7 +172,7 @@ describe("GamesController", function(){
   describe("#update action", function(){
     it('should return 403 if user is not logged in', function(done){
       request(sails.hooks.http.app)
-      .put('/games/1')
+      .post('/games/1')
       .send({})
       .expect(403)
       .end(done);
@@ -187,7 +187,7 @@ describe("GamesController", function(){
         res.headers['set-cookie'][0].should.match(/userId\=2/)
 
         agent
-        .put('/games/1')
+        .post('/games/1')
         .send({})
         .expect(403)
         .end(done);
@@ -201,7 +201,7 @@ describe("GamesController", function(){
         password: 'admin_password'
       }, function(err, res){
         agent
-        .put('/games/1')
+        .post('/games/1')
         .send({"minimumPlayers":8})
         .expect(200)
         .end(function(err, res){
@@ -210,6 +210,20 @@ describe("GamesController", function(){
           res.body.minimumPlayers.should.eql(8);
           done();
         })
+      })
+    })
+
+    it('should return 404 for non-existent game', function(done){
+      agent = request.agent(sails.hooks.http.app);
+      authHelper.login(agent, {
+        email: 'admin@test.com',
+        password: 'admin_password'
+      }, function(err, res){
+        agent
+        .post('/games/300')
+        .send({})
+        .expect(404)
+        .end(done);
       })
     })
 

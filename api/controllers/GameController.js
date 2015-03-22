@@ -7,11 +7,59 @@
 
 module.exports = {
 	
-  index: function(req, res){
+  find: function(req, res){
     var now = new Date();
     Game.find({gameTime: {">=": now}}, function(err, games){
       if (err) return res.serverError(err)
       return res.json(games)
+    })
+  },
+
+  findOne: function(req, res){
+    Game.findOne(req.param('gameId'), function(err, game){
+      if (err)   return res.serverError(err);
+      if (!game) return res.notFound();
+      return res.json(game);
+    })
+  },
+
+  create: function(req, res){
+    var params = whiteListParams(req.body)
+    params.organizer = req.user;
+    Game.create(params, function(err, game){
+      if (err) return res.serverError(err);
+
+      res.json(game);
+    })
+  },
+
+  update: function(req, res) {
+    var params = whiteListParams(req.body)
+    var gameId = req.param('gameId');
+    Game.update(gameId, params, function(err, games){
+      if (err && err.code === 'E_VALIDATION')
+        return res.validationError(err);
+
+      if (err)
+        return res.serverError(err);
+
+      if (!games.length)
+        return res.notFound();
+
+      res.json(games[0]);
+    })
+  },
+
+  destroy: function(req, res){
+    var gameId = req.param('gameId');
+    Game.findOne(gameId, function(err, game){
+      if (err) return res.serverError(err);
+      if (!game) return res.notFound();
+
+      game.destroy(function(err){
+        if (err) return res.serverError(err);
+        res.json(game);
+      })
     })
   },
 
@@ -49,17 +97,12 @@ module.exports = {
       })
     })
 
-  },
-
-  create: function(req, res){
-    var params = _.pick(req.body, ['gameTime', 'pollingCutoff', 'locationName', 'address', 'minimumPlayers']);
-    params.organizer = req.user;
-    Game.create(params, function(err, game){
-      if (err) return res.serverError(err);
-
-      res.json(game);
-    })
   }
+
 
 };
 
+
+function whiteListParams(params) {
+  return _.pick(params, ['gameTime', 'pollingCutoff', 'locationName', 'address', 'minimumPlayers']);
+}

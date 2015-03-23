@@ -48,7 +48,12 @@ module.exports = function(grunt) {
 			files: ['assets/**/*', 'tasks/pipeline.js'],
 
 			// When assets are changed:
-			tasks: ['syncAssets' , 'linkAssets']
+			tasks: ['syncAssets' , 'linkAssets'],
+
+			options: {
+				livereload: true
+			}
+
 		}
 	});
 

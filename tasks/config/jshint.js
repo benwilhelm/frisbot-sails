@@ -7,14 +7,17 @@ module.exports = function(grunt) {
   grunt.config('jshint', {
 
     all: {
-      src: ['./**/*.js'],
+      src: [
+        './**/*.js'
+      ],
       options: {
         asi: true, // don't warn about semicolons
         laxbreak: true,
         laxcomma: true,
         ignores: [
           'node_modules/**/*',
-          'assets/js/dependencies/**/*'
+          'assets/js/dependencies/**/*',
+          'assets/bower_components/**/*'        
         ],
         globals: {
           jQuery: true,
